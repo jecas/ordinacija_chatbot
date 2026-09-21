@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordinacija Nešović - Zakazivanje Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 32px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .header-icon {
+            font-size: 45px;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.bot {
+            justify-content: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 85%;
+            padding: 13px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .service-button {
+            padding: 14px 16px;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.25s ease;
+            color: #2d3748;
+        }
+
+        .service-button:hover {
+            background: #f8fafc;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .service-button:active {
+            transform: scale(0.98);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .confirmation-box {
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6eef9 100%);
+            border: 1.5px solid #cbd5e0;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .confirmation-box .checkmark {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-box h3 {
+            font-size: 16px;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .confirmation-box p {
+            font-size: 13px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .restart-button {
+            width: 100%;
+            padding: 11px;
+            background: #e6eef9;
+            color: #667eea;
+            border: 1.5px solid #cbd5e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .restart-button:hover {
+            background: #d4dfe9;
+        }
+
+        .info-box {
+            background: #f0f5ff;
+            border-left: 4px solid #667eea;
+            padding: 12px 14px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #4a5568;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-icon">⚕️</div>
+            <h1>Ordinacija Nešović</h1>
+            <p>Zakaži Pregled Online</p>
+            <div class="header-subtitle">Brzo, sigurno i besplatno</div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div class="chat-area" id="chatArea"></div>
+
+        <!-- INPUT AREA -->
+        <div class="input-area">
+            <!-- SERVICE SELECTION -->
+            <div id="serviceSelect" class="button-group">
+                <button class="service-button" onclick="selectService('Inicijalni pregled', 45)">
+                    🩺 Inicijalni Pregled (45 min)
+                </button>
+                <button class="service-button" onclick="selectService('Kontrola', 30)">
+                    📋 Kontrola (30 min)
+                </button>
+                <button class="service-button" onclick="selectService('Konsultacija', 30)">
+                    💬 Konsultacija (30 min)
+                </button>
+                <button class="service-button" onclick="selectService('EKG + Pregled', 60)">
+                    📊 EKG + Pregled (60 min)
+                </button>
+            </div>
+
+            <!-- NAME INPUT -->
+            <div id="nameInput" class="hidden">
+                <div class="form-group">
+                    <label class="input-label">Kako se zoveš?</label>
+                    <input type="text" id="nameField" class="input-field" placeholder="Unesite vaše ime i prezime" />
+                    <span id="nameError" class="error-message hidden"></span>
+                    <button class="submit-button" onclick="nextStep('name')">Dalje →</button>
+                </div>
+            </div>
+
+            <!-- PHONE INPUT -->
+            <div id="phoneInput" class="hidden">
+                <div class="form-group">
+                    <label class="input-label">Kontakt Broj</label>
+                    <input type="tel" id="phoneField" class="input-field" placeholder="+381 60 123 4567" />
+                    <span id="phoneError" class="error-message hidden"></span>
+                    <button class="submit-button" onclick="nextStep('phone')">Dalje →</button>
+                </div>
+            </div>
+
+            <!-- DOCTOR SELECTION -->
+            <div id="doctorInput" class="hidden">
+                <div class="form-group">
+                    <label class="input-label">Odaberi Specijaliste</label>
+                    <select id="doctorField">
+                        <option>Dr. Milan Nešović - Kardiolog (Primarijus)</option>
+                        <option>Dr. Jelena Bjekić-Macut - Endokrinolog</option>
+                        <option>Dr. Mirko Čolić - Internista</option>
+                        <option>Dr. Đuro Macut - Internista-Kardiolog</option>
+                        <option>Bilo koji dostupan lekar</option>
+                    </select>
+                    <button class="submit-button" onclick="nextStep('doctor')">Dalje →</button>
+                </div>
+            </div>
+
+            <!-- TIME INPUT -->
+            <div id="timeInput" class="hidden">
+                <div class="form-group">
+                    <label class="input-label">Preferovano Vreme</label>
+                    <select id="timeField">
+                        <option>Ponedeljak 15:00</option>
+                        <option>Ponedeljak 16:00</option>
+                        <option>Ponedeljak 17:00</option>
+                        <option>Utorak 15:00</option>
+                        <option>Utorak 16:30</option>
+                        <option>Utorak 17:30</option>
+                        <option>Sreda 15:00</option>
+                        <option>Sreda 16:00</option>
+                        <option>Četvrtak 15:00</option>
+                        <option>Četvrtak 16:00</option>
+                        <option>Četvrtak 17:00</option>
+                        <option>Petak 15:00</option>
+                        <option>Petak 16:00</option>
+                        <option>Petak 17:00</option>
+                    </select>
+                    <button class="submit-button" onclick="nextStep('time')">Potvrdi Pregled</button>
+                </div>
+            </div>
+
+            <!-- CONFIRMATION -->
+            <div id="confirmation" class="hidden">
+                <div class="confirmation-box">
+                    <div class="checkmark">✅</div>
+                    <h3>Pregled je Zakazan!</h3>
+                    <p>Detalji su poslati na vašu telefonsku poruku. Očekujemo vas u Ordinaciji Nešović!</p>
+                </div>
+                <div class="info-box">
+                    📍 <strong>Adresa:</strong> Svetozara Markovića 9/3, Beograd<br>
+                    📞 <strong>Telefon:</strong> +381 63 1215 160<br>
+                    ⏰ <strong>Radno vreme:</strong> Pon-Pet 15:00-19:00
+                </div>
+                <button class="restart-button" onclick="location.reload()">Nova Rezervacija</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let bookingData = {};
+
+        function addMessage(text, isUser = false) {
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function selectService(service, duration) {
+            bookingData.service = service;
+            bookingData.duration = duration;
+            
+            addMessage(`${service}`, true);
+            
+            document.getElementById('serviceSelect').classList.add('hidden');
+            document.getElementById('nameInput').classList.remove('hidden');
+            
+            setTimeout(() => {
+                addMessage('Kako se zoveš?');
+                document.getElementById('nameField').focus();
+            }, 300);
+        }
+
+        function nextStep(field) {
+            const nameField = document.getElementById('nameField');
+            const phoneField = document.getElementById('phoneField');
+            const doctorField = document.getElementById('doctorField');
+            const timeField = document.getElementById('timeField');
+            const nameError = document.getElementById('nameError');
+            const phoneError = document.getElementById('phoneError');
+            
+            if (field === 'name') {
+                const name = nameField.value.trim();
+                
+                if (!name) {
+                    nameError.textContent = 'Unesite vaše ime i prezime';
+                    nameError.classList.remove('hidden');
+                    nameField.focus();
+                    return;
+                }
+                
+                nameError.classList.add('hidden');
+                bookingData.name = name;
+                addMessage(name, true);
+                
+                document.getElementById('nameInput').classList.add('hidden');
+                document.getElementById('phoneInput').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    addMessage('Koji je vaš kontakt broj?');
+                    phoneField.focus();
+                }, 300);
+            }
+            
+            else if (field === 'phone') {
+                const phone = phoneField.value.trim();
+                
+                if (!phone) {
+                    phoneError.textContent = 'Unesite broj telefona';
+                    phoneError.classList.remove('hidden');
+                    phoneField.focus();
+                    return;
+                }
+                
+                phoneError.classList.add('hidden');
+                bookingData.phone = phone;
+                addMessage(phone, true);
+                
+                document.getElementById('phoneInput').classList.add('hidden');
+                document.getElementById('doctorInput').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    addMessage('Koji lekar bi vam odgovarao?');
+                    doctorField.focus();
+                }, 300);
+            }
+
+            else if (field === 'doctor') {
+                const doctor = doctorField.value;
+                bookingData.doctor = doctor;
+                addMessage(doctor, true);
+                
+                document.getElementById('doctorInput').classList.add('hidden');
+                document.getElementById('timeInput').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    addMessage('Koje vreme vam odgovara?');
+                    timeField.focus();
+                }, 300);
+            }
+            
+            else if (field === 'time') {
+                const time = timeField.value;
+                bookingData.time = time;
+                addMessage(time, true);
+                
+                document.getElementById('timeInput').classList.add('hidden');
+                document.getElementById('confirmation').classList.remove('hidden');
+                
+                setTimeout(() => {
+                    const summary = `Vaš pregled je zakazan!\n\n📌 Usluga: ${bookingData.service}\n👨‍⚕️ Lekar: ${bookingData.doctor}\n⏰ Vreme: ${time}\n\nVidećemo vas! ✨`;
+                    addMessage(summary);
+                }, 300);
+            }
+        }
+
+        // Initial message
+        window.addEventListener('load', () => {
+            addMessage('Dobrodošli! 👋 Zakaži pregled u nekoliko sekundi...');
+        });
+
+        // Allow Enter key to submit
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('nameInput').classList.contains('hidden')) {
+                    nextStep('name');
+                } else if (!document.getElementById('phoneInput').classList.contains('hidden')) {
+                    nextStep('phone');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
